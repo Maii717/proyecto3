@@ -11,6 +11,10 @@ const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
 const cors = require('cors');
 const app = express();
+const userRoute = require('./routes/user');
+const placeRoute = require('./routes/place');
+const categoryRoute = require('./routes/category');
+const reviewRoute = require('./routes/review');
 
 mongoose.connect(process.env.DBURL).then(() =>{
   console.log(`Connected to DB: ${process.env.DBURL}`);
@@ -51,8 +55,12 @@ app.use(session({
 
 require('./passport')(app);
 
+//base route
 app.use('/api/auth', auth);
-
+app.use('/api', userRoute);
+app.use('/api', placeRoute);
+app.use('/api', categoryRoute);
+app.use('/api', reviewRoute);
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   var err = new Error('Not Found');

@@ -15,6 +15,10 @@ export class LoginFormComponent{
     this.auth.login(username,password).subscribe();
   }
 
+  signup(username, password){
+    this.auth.signup(username,password).subscribe();
+  }
+
   logout() {
     this.auth.logout().subscribe();
   }
