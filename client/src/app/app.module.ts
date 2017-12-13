@@ -6,12 +6,14 @@ import { AppComponent } from './app.component';
 import { LoginFormComponent } from './login-form/login-form.component';
 import { AuthService } from '../services/auth.service';
 import { LabarraComponent } from './labarra/labarra.component';
+import { ListadoComponent } from './listado/listado.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginFormComponent,
-    LabarraComponent
+    LabarraComponent,
+    ListadoComponent
   ],
   imports: [
     BrowserModule,

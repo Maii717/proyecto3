@@ -1,3 +1,5 @@
+
+
 const path = require ('path');
 const fs = require ('fs');
 
@@ -37,11 +39,11 @@ function getPlaces(req,res,next){
 
   if(!categoryId){
 
-      let find = Place.find({}).sort('name');
+      var find = Place.find({}).sort('name');
 
   }else{
 
-     let find = Place.find({place:placeId}).sort('name');
+     var find = Place.find({place:placeId}).sort('name');
   }
     find.populate({path:'category'}).exec((err,places) =>{
       if(err){

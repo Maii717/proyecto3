@@ -7,7 +7,7 @@ const placeSchema = new Schema({
   image:String,
   address: String,
   city: String,
-  zipCode: String,
+  zipCode: Number,
   location: { lat: Number, long: Number },
   category: {type: Schema.ObjectId, ref:'Category'},
   review:[{type: Schema.ObjectId, ref:'Review'}]

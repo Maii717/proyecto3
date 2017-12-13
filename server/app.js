@@ -6,7 +6,6 @@ const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-const auth = require('./routes/auth');
 const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
 const cors = require('cors');
@@ -53,14 +52,30 @@ app.use(session({
 }))
 
 
-require('./passport')(app);
+
+
+
+
+//Configuration Headers Http
+
+app.use((req,res,next) => {
+	res.header('Access-Control-Allow-Origin','*'); // permitimos el acceso de todos los dominios a la API
+	res.header('Access-Control-Allow-Headers','Authorization,X-API-KEY,Origin,'+
+		'X-Requested-With, Content-Type,Accept,Access-Control-Allow-Request-Method');
+	res.header('Access-Control-Allow-Methods','GET,POST,OPTIONS,PUT,DELETE');
+	res.header('Allow','GET,POST,OPTIONS,PUT,DELETE');
+
+	//lanzamos la funcion next para salir del middleware
+	next();
+});
+
 
 //base route
-app.use('/api/auth', auth);
 app.use('/api', userRoute);
-app.use('/api', placeRoute);
-app.use('/api', categoryRoute);
-app.use('/api', reviewRoute);
+// app.use('/api', placeRoute);
+// app.use('/api', categoryRoute);
+// app.use('/api', reviewRoute);
+
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   var err = new Error('Not Found');

@@ -1,3 +1,5 @@
+
+
 const path = require ('path');
 const fs = require ('fs');
 
@@ -6,8 +8,57 @@ const Category = require('../models/Category');
 const Review = require('../models/Review');
 const multipart = require ('connect-multiparty');
 
-function getReview(req, res){
-  res.status(200).send({message:'Funciona'})
+
+function getReview(req,res){
+
+  let reviewId = req.params.id;
+
+  Review.findById(reviewId).populate({path: 'place'}).exec((err, review)=>{
+    if(err){
+      res.status(500).send({message:'Error en la petición.'});
+    }else{
+      if(!review){
+      res.status(404).send({message:'La review no existe.'});
+    }else{
+      res.status(200).send({review});
+  }
+}
+});
+
+}
+
+
+
+
+function getReviews(req,res,next){
+
+  const placeId = req.params.place;
+
+  if(!placeId){
+
+      var find = Review.find({}).sort('date');
+
+  }else{
+
+     var find = Review.find({place:placeId}).sort('date');
+  }
+    find.populate({
+      path:'place',
+      populate:{
+        path:'category',
+        model:'Category'
+      }
+    }).exec((err,reviews) =>{
+      if(err){
+        res.status(500).send({message:'Error en la petición'});
+      }else{
+        if(!reviews){
+         res.status(404).send({message:'No hay reviews'});
+       }else{
+         res.status(200).send({reviews});
+       }
+      }
+    });
 }
 
 
@@ -50,9 +101,9 @@ function uploadImage(req, res){
 
 
     if(file_ext == 'PNG'|| file_ext == 'JPG'|| file_ext == 'GIF'|| file_ext == 'png' || file_ext == 'jpg'|| file_ext == 'gif'){
-      Place.findByIdAndUpdate(reviewId, {image:fileName}, (err, reviewUpdated) =>{
+      Review.findByIdAndUpdate(reviewId, {image:fileName}, (err, reviewUpdated) =>{
         if(!reviewUpdated){
-          res.status(404).send({message:'No se ha podido actualizar el lugar'});
+          res.status(404).send({message:'No se ha podido actualizar la review'});
         } else{
           res.status(200).send({review:reviewUpdated});
         }
@@ -84,9 +135,29 @@ function getImageFile(req,res){
 
 
 
+
+function deleteReview(req,res){
+  const reviewId = req.params.id;
+
+   Review.findByIdAndRemove(reviewId, (err, reviewRemoved)=>{
+     if(err){
+       res.status(500).send({message: 'Error al eliminar la review'});
+     }else{
+       if(!reviewRemoved){
+        res.status(404).send({message: 'La review no ha sido eliminada'});
+      }else{
+        res.status(500).send({review: reviewRemoved});
+      }
+     }
+   });
+ }
+
+
 module.exports= {
   getReview,
+  getReviews,
   saveReview,
   uploadImage,
-  getImageFile
+  getImageFile,
+  deleteReview
 };
