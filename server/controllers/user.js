@@ -13,7 +13,6 @@ function saveUser(req,res){
 
   var params = req.body;
 
-  user.username = params.username;
   user.name = params.name;
   user.surname = params.surname;
   user.email = params.email;
@@ -25,7 +24,7 @@ function saveUser(req,res){
     //encriptar password and save data
     bcrypt.hash(params.password, null, null, function(err, hash){
       user.password = hash;
-      if (user.username != null && user.name != null && user.surname != null  && user.email != null && user.email != null){
+      if (user.name != null && user.surname != null  && user.email != null && user.email != null){
         //Save user
          user.save((err,userStored) => {
            if(err){
@@ -63,7 +62,7 @@ function loginUser(req, res){
 			res.status(500).send({message: 'Error en la petición'});
 		}else{
 			if(!user){
-				res.status(404).send({message: 'El usuario no existe'});
+				res.status(404).send({message: ' El usuario no existe'});
 			}else{
 				// Comprobar la contraseña
 				bcrypt.compare(password, user.password, function(err, check){
@@ -78,7 +77,7 @@ function loginUser(req, res){
 							res.status(200).send({user});
 						}
 					}else{
-						res.status(404).send({message: 'El usuario no ha podido loguearse'});
+						res.status(404).send({message: ' El usuario no ha podido loguearse'});
 					}
 				});
 			}

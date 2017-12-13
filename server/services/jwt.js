@@ -7,7 +7,6 @@ const config = require('../config');
 exports.createToken = function(user){
 	var payload = {
 		sub:  user._id,// id registro
-    username: user.username,
 		name: user.name,
 		surname: user.surname,
 		email: user.email,
