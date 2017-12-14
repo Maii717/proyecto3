@@ -5,6 +5,7 @@ const Category = require('../models/Category');
 const Place = require('../models/Place');
 const Review = require('../models/Review');
 const multipart = require ('connect-multiparty');
+const mongoosePaginate = require('mongoose-pagination');
 
 
 
@@ -45,6 +46,40 @@ function saveCategory(req, res) {
      }
     }
   });
+}
+
+//Método que trae las categorías por paginación
+function getAllCategories (req, res){
+
+    var page;
+
+    if (req.params.page) {
+
+        page = req.params.page;
+    }
+    else {
+        page = 1;
+    }
+
+    var itemsPerPage = 4;
+
+    //.sort() es para ordenar en orden alfabetico por name
+    Category.find().sort('name').paginate(page, itemsPerPage, (err, categories, total) => {
+        if (err) {
+            res.status(500).send({message: 'Error en la petición'});
+        }
+        else {
+            if (!categories) {
+                res.status(404).send({message: 'No hay categorías.'});
+            }
+            else {
+                return (res.status(200).send({
+                    total_items: total,
+                    categories: categories
+                }));
+            }
+        }
+    });
 }
 
 function updateCategory(req, res) {
@@ -157,6 +192,7 @@ function getImageFile(req,res){
 
 
 module.exports = {
+  getAllCategories,
   getCategory,
   saveCategory,
   updateCategory,

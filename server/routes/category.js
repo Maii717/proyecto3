@@ -7,6 +7,7 @@ const ensureLogin = require("../middleware/authenticated");
 const router = express.Router();
 
 
+router.get('/get-all-categories/:page?',categoryController.getAllCategories);
 router.get('/category/:id',categoryController.getCategory);
 router.post('/category',ensureLogin.ensureAuth,categoryController.saveCategory);
 router.post('/category/:id',ensureLogin.ensureAuth,categoryController.updateCategory);

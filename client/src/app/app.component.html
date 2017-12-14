@@ -1,18 +1,54 @@
-<!-- componente principal - vista -->
-<div *ngIf="identity" class="navigation col-lg-1">
-  <h1>
-    {{title}}
-  </h1>
-  <span>Bienvenid@ {{identity.name}} {{identity.surname}}</span>
-  <span class="btn btn-warning" (click)="logOut()">
-      Cerrar Sesión
-  </span>
+<div class="">
+    <nav class="navbar navbar-toggleable-md navbar-inverse bg-inverse fixed-top">
+
+      <a class="navbar-brand" [routerLink]="['/']">
+          <span class="fa fa-music" aria-hidden="true">
+
+          </span>
+          {{title}}
+      </a>
+
+      <ul class="nav navbar-nav mr-auto">
+
+        <li class="nav-item active">
+          <a class="nav-link" href="#"> <span class="fa fa-search" aria-hidden="true"></span> Buscar<span class="sr-only">(current)</span></a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link" [routerLink] = "['/categorias']"><span class="fa fa-star-o" aria-hidden="true"></span> Categorías</a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link"  [routerLink] = "['/lugares']"><span class="fa fa-book" aria-hidden="true"></span> Lugares</a>
+        </li>
+
+      </ul>
+
+      <ul class="nav navbar-nav">
+
+        <li class="nav-item">
+
+            <!-- <a class="nav-link" [routerLink] = "['/mis-datos']"> <span class="fa fa-cogs" aria-hidden="true"></span></a> -->
+
+        </li>
+
+        <li class="nav-item">
+
+            <button type="button" class="nav-link btn btn-outline-secondary btn-sm" (click) = "logOut()" *ngIf = "identity">Salir <span class="fa fa-sign-out" aria-hidden="true"></span> </button>
+
+        </li>
+
+      </ul>
+    </nav>
 </div>
+
+
 
 <div class="clearfix"></div>
 
 <div *ngIf="identity" class="central col-lg-11">
-  <p>Estas logueado en la aplicación</p>
+  <p>Bienvenid@ {{identity.name}}, estas logueado en Veggie Point</p>
+    <router-outlet> </router-outlet>
 </div>
 
 <div class="col-lg-12" *ngIf="!identity" >
@@ -37,24 +73,37 @@
       <input type="submit" value="Entrar" class="btn btn-primary"/>
     </form>
   </div>
+
+
   <div class="col-lg-6">
     <h1>Registrate</h1>
-    <form class="col-md-10">
+    <div *ngIf="alertRegister">
+      <!--mostramos error si hay -->
+      <div class="alert alert-info">
+      {{alertRegister}}
+      </div>
+    </div>
+    <form #registerForm="ngForm" (ngSubmit)="onSubmitRegister()" class="col-md-10">
       <p>
-        <label>Nombre: </label>
-        <input type="text" class="form-control" required />
+        <label>Nombre:</label>
+        <input type="text" #name="ngModel" name="name" [(ngModel)]="userRegister.name" class="form-control" required />
+          <span *ngIf="!name.valid && name.touched">El nombre es obligatorio</span>
       </p>
       <p>
         <label>Apellidos: </label>
-        <input type="text" class="form-control" required />
+        <input type="text" #surname="ngModel" name="surname" [(ngModel)]="userRegister.surname" class="form-control" required />
+          <span *ngIf="!surname.valid && surname.touched">El apellido es obligatorio</span>
       </p>
       <p>
         <label>Email: </label>
-        <input type="text" class="form-control" required />
-      </p>
+        <input type="email" #email="ngModel" name="email" [(ngModel)]="userRegister.email" class="form-control" required />
+        <span *ngIf="!email.valid && email.touched">El email es obligatorio</span>
+    </p>
+
       <p>
         <label>Contraseña: </label>
-        <input type="password" class="form-control" required />
+        <input type="password" #password="ngModel" name="password" [(ngModel)]="userRegister.password" class="form-control" required />
+        <span *ngIf="!password.valid && password.touched">La contraseña es obligatoria</span>
       </p>
       <input type="submit" value="Registrarse" class="btn btn-primary"/>
     </form>

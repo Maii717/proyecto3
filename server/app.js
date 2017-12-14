@@ -73,7 +73,7 @@ app.use((req,res,next) => {
 //base route
 app.use('/api', userRoute);
 // app.use('/api', placeRoute);
-// app.use('/api', categoryRoute);
+app.use('/api', categoryRoute);
 // app.use('/api', reviewRoute);
 
 // catch 404 and forward to error handler

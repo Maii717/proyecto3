@@ -9,14 +9,17 @@ import { UserService } from './services/user.service';// importamos el servicio
 export class AppComponent implements OnInit {
   public title = 'Veggie Point';
   public user: User;
+  public userRegister: User;
   public identity;
   public token;
   public errorMessage;
+  public alertRegister;
 
   constructor(
     private _userService: UserService
   ) {
     this.user = new User('', '', '', '', '', 'ROLE_USER', '');
+    this.userRegister = new User('', '', '', '', '', 'ROLE_USER', '');
 
   };
 
@@ -54,9 +57,8 @@ export class AppComponent implements OnInit {
                 }else{
                   //Crear elemento en el localStorage para tener el token disponible.
                   localStorage.setItem('token', token);
+                    this.user = new User('', '', '', '', '', 'ROLE_USER', '');
 
-                  console.log(token);
-                  console.log(identity);
                 }
 
              },
@@ -89,7 +91,30 @@ export class AppComponent implements OnInit {
     localStorage.removeItem('identity');
     localStorage.removeItem('token');
     localStorage.clear();
-    this.identity = null;
-    this.token = null;
+    location.reload();
+  }
+
+  onSubmitRegister(){
+    console.log(this.userRegister);
+    this._userService.register(this.userRegister).subscribe(
+     response =>{
+       let user = response.user;
+       this.userRegister = user;
+       if(!user._id){
+          this.alertRegister ='Error al registrarse';
+       }else{
+          this.alertRegister ='El registro se ha realizado correctamente, identificate con ' + this.userRegister.email;
+          this.userRegister  = new User('', '', '', '', '', 'ROLE_USER', '');
+       }
+     },
+     error => {
+       var errorMessage = <any>error;
+       if (errorMessage != null) {
+         var body = JSON.parse(error._body);
+         this.alertRegister = body.message;
+         console.log(error);
+       }
+     }
+    );
   }
 }

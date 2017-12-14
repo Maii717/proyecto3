@@ -30,6 +30,7 @@
     "nodemon": "^1.12.1",
     "path": "^0.12.7",
     "save": "^2.3.2",
-    "serve-favicon": "~2.4.2"
+    "serve-favicon": "~2.4.2",
+    "mongoose-pagination": "^1.0.0"
   }
 }

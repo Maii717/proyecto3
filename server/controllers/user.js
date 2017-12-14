@@ -1,164 +1,184 @@
-
-
-const User = require('../models/User');
 const fs = require('fs');
-const path = require ('path');
-const multipart = require ('connect-multiparty');
-const bcrypt = require ('bcrypt-nodejs');
+const path = require('path');
+const bcrypt = require('bcrypt-nodejs'); //Trayendo el modulo para encriptar contraseñas
+const User = require('../models/User'); //Trayendo el modelo ya creado
 const jwt = require('../services/jwt');
 
-//Crear usuario
-function saveUser(req,res){
-  var  user = new User();
-
-  var params = req.body;
-
-  user.name = params.name;
-  user.surname = params.surname;
-  user.email = params.email;
-  user.password = params.password;
-  user.role = 'ROLE_USER';
-  user.image = 'null';
-
-  if (params.password){
-    //encriptar password and save data
-    bcrypt.hash(params.password, null, null, function(err, hash){
-      user.password = hash;
-      if (user.name != null && user.surname != null  && user.email != null && user.email != null){
-        //Save user
-         user.save((err,userStored) => {
-           if(err){
-             res.status(500).send({message:'Error al guardar el usuario'});
-           }else{
-             if(!userStored){
-               res.status(404).send({message:'No se ha registrado el usuario'});
-             }else{
-               res.status(200).send({user:userStored});
-
-             }
-
-           }
-         });
-
-      }else{
-        res.status(200).send({message:'Rellena todos los campos'});
-      }
-    });
-  }else{
-    res.status(500).send({message:'Introduce la contraseña'});
-  }
+function pruebas(req, res){
+    res.status(200).send({message: 'Probando una acción del controlador de usuarios del API Rest con Node y MongoDB'});
 }
 
+function saveUser(req, res){
+    //Método para el registro de usuarios
+    var user = new User();
+
+    var params = req.body;
+
+    console.log(params);
+
+    user.name = params.name;
+    user.surname = params.surname;
+    user.email = params.email;
+    user.role = 'ROLE_USER';
+    user.image = 'null';
+
+    if (params.password) {
+        //Encriptar contraseña
+        bcrypt.hash(params.password, null, null, function (err, hash) {
+
+            //La contraseña guardada ahora es igual cl codigo hash
+            user.password = hash;
+
+            if (user.name != null && user.surname != null && user.email != null) {
+                //Guardar usuario
+
+                user.save((err, userStored) => {
+                    if (err) {
+                        res.status(500).send({message: 'Error al guardar el usuario'});
+                    }
+                    else {
+                        if (!userStored) {
+                            res.status(404).send({message: 'No se ha registrado el usuario'});
+                        }
+                        else {
+                            res.status(202).send({user:userStored});
+                        }
+                    }
+
+                });
 
 
-//Metodo LogIn
+            }
+            else {
+                res.status(200).send({message: 'Parece que hay un campo vacio, introduce todos los campos.'});
+            }
+        });
+    }
+    else {
+        res.status(200).send({message: 'Introduce la contraseña: '});
+    }
+
+}
+
 function loginUser(req, res){
-	var params = req.body;
-	var email = params.email;
-	var password = params.password;
-	// buscamos el email //
-	User.findOne({email: email.toLowerCase()}, (err,user) => {
-		if(err){
-			res.status(500).send({message: 'Error en la petición'});
-		}else{
-			if(!user){
-				res.status(404).send({message: ' El usuario no existe'});
-			}else{
-				// Comprobar la contraseña
-				bcrypt.compare(password, user.password, function(err, check){
-					if(check){
-						// devolver los datos del usuar io logueado //
-						if(params.gethash){
-							// devolver un token de jwt //
-							res.status(200).send({token: jwt.createToken(user)  // llamamos al servicio jwt //
-							});
-						}else{
-							// hash vacio
-							res.status(200).send({user});
-						}
-					}else{
-						res.status(404).send({message: ' El usuario no ha podido loguearse'});
-					}
-				});
-			}
-		}
-	});
+    //Comprueba si el e-mail y la contraseña registradas existen en la base de datos
+
+    var params = req.body;
+
+    var email = params.email;
+    var password = params.password;
+
+    User.findOne({email: email.toLowerCase()}, function(err, user){
+        if (err) {
+            res.status(500).send({message: 'Error en la petición'});
+        }
+        else{
+
+            if (!user) {
+                res.status(404).send({message: 'El usuario no se encuentra registrado.'});
+            }
+            else{
+                //Comprobar la contraseña
+                bcrypt.compare(password, user.password, function(err, check){
+                    if (check) {
+                        //Devolver los datos del usuario logueado
+                        if (params.gethash) {
+                            res.status(200).send({
+                                token: jwt.createToken(user)
+                            });
+                        }
+                        else {
+                            res.status(200).send({user});
+                        }
+                    }
+                    else {
+                        res.status(404).send({message: 'Contraseña incorrecta, el usuario no se ha podido identificar.'});
+                    }
+                });
+            }
+
+        }
+    });
 }
 
-
-
-function updateUser (req,res) {
+function updateUser(req, res) {
+  console.log("JESUS");
   const userId = req.params.id;
   const update = req.body;
 
-  User.findByIdAndUpdate(userId, update, (err, userUpdated) =>{
-    if(err){
-      res.status(500).send({message:'Error al actualizar el usuario'});
-    }else{
-      if(!userUpdated){
-        res.status(404).send({message:'No se ha podido actualizar el usuario'});
-      }else{
-        res.status(200).send({user:userUpdated});
-      }
-        }
-  });
-}
+  console.log(userId, update);
 
-
-
-function uploadImage(req, rs){
-  const userId = req.params.id;
-  const fileName = 'No hay imagen...';
-
-  if(req.files){
-    const file_path = req.files.image.path;
-    const file_split = file_path.split('/');
-    const fileName = file_split[2];
-
-    const ext_split = fileName.split('.');
-    const file_ext = ext_split[1];
-
-        console.log(file_ext);
-    if(file_ext == 'PNG'|| file_ext == 'JPG'|| file_ext == 'GIF'|| file_ext == 'png' || file_ext == 'jpg'|| file_ext == 'gif'){
-      User.findByIdAndUpdate(userId, {image:fileName}, (err, userUpdated) =>{
-        if(!userUpdated){
-          res.status(404).send({message:'No se ha podido actualizar el usuario'});
-        } else{
-          res.status(200).send({image: fileName, user:userUpdated});
-        }
+  User.findByIdAndUpdate(userId, update, (err, userUpdated) => {
+    if (err) {
+      res.status(500).send({
+        message: 'Error al guardar el usuario'
       });
-    }else{
-      res.status(200).send({message: 'Extensión del archivo no valida'});
+    } else {
+      if (!userUpdated) {
+        res.status(404).send({
+          message: 'Error al actualizar al usuario'
+        });
+      } else {
+        res.status(200).send({
+          usuario: userUpdated
+        });
+      }
     }
-
-  }else{
-    res.status(200).send({message: 'No has subido ninguna imagen...'});
-  }
-}
-
-
-
-function getImageFile(req,res){
-  let imageFile = req.param.imageFile;
-  let pathFile = './uploads/users/'+imageFile;
-
-  fs.exists(pathFile, function (exits){
-    if(exits){
-      res.sendFile(path.resolve(pathFile));
-    }else{
-      res.status(200).send({message: 'No existe la imagen...'});
-    }
-
   });
 }
 
+function uploadImage(req, res){
+    var userId = req.params.id;
+    //var file_name = 'No subido...';
 
+    if (req.files) {
+
+      var file_path = req.files.image.path; /** Trae la ruta completa del fichero subido */
+      var file_ext = path.extname(file_path); /** Trae la extensión del fichero en esa ruta */
+      var file_name = path.basename(file_path); /** Trae el nombre base del fichero */
+
+        if (file_ext == '.png' || file_ext == '.jpg' || file_ext == '.jpeg') {
+
+            User.findByIdAndUpdate(userId, {image: file_name}, (err, userUpdated) => {
+                if (!userUpdated) {
+                    res.status(404).send({message: 'No se ha podido actualizar el usuario'});
+                }
+                else {
+                    res.status(200).send({image: file_name, user: userUpdated});
+                }
+            });
+        }
+        else {
+            res.status(200).send({message: 'Extension del archivo no valida.'});
+        }
+    }
+    else {
+        res.status(200).send({message: 'No has subido ninguna imagen'});
+    }
+
+}
+
+function getImageFile(req, res){
+    var imageFile = req.params.imageFile; //Aqui se recoge el nombre de la imagen junto con su extensión
+    var path_file = './uploads/users/'+imageFile; //Esta es la ruta mas el nombre de la imagen
+
+    console.log('Ruta de la imagen: ', path_file);
+
+    fs.exists(path_file, function(exists){
+        if (exists) {
+            res.sendFile(path.resolve(path_file)); //Si la imagen existe se envia de vuelta la imagen con ruta
+        }else {
+            res.status(200).send({message: 'No existe la imagen'}); //Si no existe envia un mensaje que muestra que la imagen no existe
+        }
+    });
+}
 
 
 module.exports = {
-  saveUser,
-  loginUser,
-  updateUser,
-  uploadImage,
-  getImageFile,
+    pruebas,
+    saveUser,
+    loginUser,
+    updateUser,
+    uploadImage,
+    getImageFile
 };
