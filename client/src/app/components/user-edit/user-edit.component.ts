@@ -12,7 +12,7 @@ import { GLOBAL } from '../../services/global';
 
 export class UserEditComponent implements OnInit{
 
-  public titulo: string;
+  public title: string;
   public user: User;
   public identity;
   public token;
@@ -23,10 +23,12 @@ export class UserEditComponent implements OnInit{
   constructor(
     private _userService: UserService
   ){
-    this.titulo = 'Actualizar mis datos';
+    this.title = 'Actualizar mis datos';
     this.identity = this._userService.getIdentity();
     this.token = this._userService.getToken();
     this.user = this.identity;
+
+    this.url = GLOBAL.url;
   }
   ngOnInit(){
 
@@ -66,7 +68,7 @@ export class UserEditComponent implements OnInit{
                                localStorage.setItem('identity', JSON.stringify(this.user));
 
                                //Construyendo la url para consultar
-                               let image_path = this.url + '/get-image-user/'+ this.user.image;
+                               let image_path = this.url + 'get-image-user/'+ this.user.image;
 
                                //Actualizando la imagen
                                document.getElementById("image-logged").setAttribute('src', image_path);

@@ -1,7 +1,7 @@
 // middleware.js
 var jwt = require('jwt-simple');
 var moment = require('moment');
-var config = require('../config');
+var secret = 'clave_secreta';
 
 exports.ensureAuth = function(req, res, next) {
   if(!req.headers.authorization) {
@@ -10,15 +10,18 @@ exports.ensureAuth = function(req, res, next) {
       .send({message: "Tu petición no tiene cabecera de autorización"});
   }
 
-  var token = req.headers.authorization.split(" ")[1];
-  var payload = jwt.decode(token, config.TOKEN_SECRET);
+  var token = req.headers.authorization.split(/['"]+/g,'');
 
-  if(payload.exp <= moment().unix()) {
-     return res
-     	.status(401)
-        .send({message: "El token ha expirado"});
+  try{
+
+        var payload = jwt.decode(token, secret);
+      if(payload.exp <= moment().unix()){
+        return res.status(401).send({message: "Token expirado"});
+      }
+  }catch(ex){
+    console.log(ex);
+    return res.status(404).send({message: "Token no valido"});
   }
-
-  req.user = payload;
-  next();
-}
+   req.user = payload;
+   next();
+};

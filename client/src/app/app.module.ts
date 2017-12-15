@@ -10,13 +10,18 @@ import {UserEditComponent} from './components/user-edit/user-edit.component';
 import { HomeComponent } from './components/home/home.component';
 // import { CategoryDetailComponent } from './components/category-detail/category-detail.component';
 import {routes} from './app.routes';
-import { CategoryListComponent } from './components/category-list/category-list.component';
+import { CategoriesComponent } from './components/categories/categories.component';
+import { CategoryAddComponent } from './components/category-add/category-add.component';
+import { CategoryEditComponent } from './components/category-edit/category-edit.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     UserEditComponent,
-    CategoryListComponent,
+    CategoriesComponent,
+    HomeComponent,
+    CategoryAddComponent,
+    CategoryEditComponent
   ],
   imports: [
     BrowserModule,

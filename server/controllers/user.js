@@ -102,29 +102,21 @@ function loginUser(req, res){
 }
 
 function updateUser(req, res) {
-  console.log("JESUS");
-  const userId = req.params.id;
-  const update = req.body;
+   var userId = req.params.id;
+   var update = req.body;
 
-  console.log(userId, update);
+   User.findByIdAndUpdate(userId, update, (err,userUpdated) => {
+    if(err){
 
-  User.findByIdAndUpdate(userId, update, (err, userUpdated) => {
-    if (err) {
-      res.status(500).send({
-        message: 'Error al guardar el usuario'
-      });
-    } else {
-      if (!userUpdated) {
-        res.status(404).send({
-          message: 'Error al actualizar al usuario'
-        });
-      } else {
-        res.status(200).send({
-          usuario: userUpdated
-        });
+      res.status(500).send({message:'Error al actualizar el usuario'})
+    }else{
+      if(!userUpdated){
+        res.status(400).send({message:'No se ha podido actualizar el usuario'});
+      }else{
+        res.status(200).send({user: userUpdated});
       }
     }
-  });
+   });
 }
 
 function uploadImage(req, res){

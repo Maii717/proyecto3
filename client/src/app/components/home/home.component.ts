@@ -1,21 +1,28 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 
+
+import { Category } from '../../models/category';
+
 @Component({
   selector: 'home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })
 
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit{
+  public titulo: string;
 
-  public title: string;
-  constructor(private _route: ActivatedRoute, private _router: Router) {
-    this.title = 'Inicio';
-   }
+  constructor(
+    private _route: ActivatedRoute,
+    private _router: Router,
 
-  ngOnInit() {
-    console.log('Cargando la home.');
+  ){
+    this.titulo = 'Home';
+
   }
 
+  ngOnInit(){
+    console.log('home component cargado')
+}
 }

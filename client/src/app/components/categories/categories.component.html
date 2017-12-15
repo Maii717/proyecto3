@@ -1,0 +1,5 @@
+<div class="head-page">
+  <h1>{{titulo}}</h1>
+  <a [routerLink] = "['/crear-categoria']" *ngIf="identity && identity.role == 'ROLE_ADMIN'"class="btn btn-default">
+    Añadir Categoría
+  </a>

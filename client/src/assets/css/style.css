@@ -1,3 +1,9 @@
-body{
+html,body{
 	background-color: #00FF7F;
+}
+
+.actived{
+	border-bottom: 4px solid white;
+	padding-bottom: 4px;
+
 }

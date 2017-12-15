@@ -26,26 +26,28 @@ function getCategory(req, res){
 }
 
 
-function saveCategory(req, res) {
-  const category = new Category();
-  const params = req.body;
+function saveCategory(req, res){
 
-  category.name = params.name;
-  category.description = params.description;
-  category.image = 'null';
+    var category = new Category();
+    var params = req.body;
 
+    category.name = params.name;
+    category.description = params.description;
+    category.image = 'null';
 
-  category.save((err, categoryStored) => {
-    if (err) {
-      res.status(500).send({message: 'Error al añadir la categoría'});
-    } else {
-      if (!categoryStored) {
-        res.status(404).send({message: 'Error al añadir la categoría  '});
-      } else {
-        res.status(200).send({category: categoryStored});
-     }
-    }
-  });
+    category.save((err, categoryStored) => {
+        if (err) {
+            res.status(500).send({message: 'Error al guardar la categoría'});
+        }
+        else {
+            if (!categoryStored) {
+                res.status(404).send({message: 'La categoria no ha sido guardada'});
+            }
+            else {
+                res.status(200).send({category: categoryStored});
+            }
+        }
+    });
 }
 
 //Método que trae las categorías por paginación
